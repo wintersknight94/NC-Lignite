@@ -60,7 +60,7 @@ for i = 1, nodecore.hard_stone_strata do
 				.. modname .. "_mask_ore.png)"},
 			drop_in_place = modname .. ":cobble",
 --			after_destruct = (function (pos, stack, qty, velocity, speed) 
---				if(math.random(100) >= 63)then
+--				if(math.random(100) >= 49)then
 --				local space = minetest.find_node_near(pos,1,"air",false)
 --				nodecore.item_eject(ItemStack("nc_lignite:coal_dust"),digger,space or pos)
 --				end
@@ -93,7 +93,7 @@ reg("Cobble", {
 
 ----------------------------------------
 ----------------------------------------
-
+for i = 6,12 do
 nodecore.register_craft({
 		label = "break lignite cobble into lumps",
 		action = "pummel",
@@ -101,11 +101,11 @@ nodecore.register_craft({
 			{match = "nc_lignite:cobble_loose", replace = "nc_terrain:gravel"}
 		},
 		items = {
-			{name = "nc_fire:lump_coal", count = 8, scatter = 5},
---			{name = "nc_lignite:coal_dust", count = 8, scatter = 3}
+			{name = "nc_fire:lump_coal", count = i, scatter = 4},
+			{name = "nc_lignite:coal_dust", count = i, scatter = 3}
 		},
 		toolgroups = {cracky = 2, thumpy = 2},
-		itemscatter = 5
+		itemscatter = 4
 	})
 
 nodecore.register_craft({
@@ -115,38 +115,58 @@ nodecore.register_craft({
 			{match = "nc_lignite:cobble", replace = "nc_terrain:gravel"}
 		},
 		items = {
-			{name = "nc_fire:lump_coal", count = 8, scatter = 5},
---			{name = "nc_lignite:coal_dust", count = 8, scatter = 3}
+			{name = "nc_fire:lump_coal", count = i, scatter = 5},
+			{name = "nc_lignite:coal_dust", count = i, scatter = 3}
 		},
 		toolgroups = {cracky = 3, thumpy = 4},
-		itemscatter = 5
+		itemscatter = 6
 	})
-
+end
 ----------------------------------------
 
--- minetest.register_node("nc_lignite:coal_dust", {
-		-- description = "Coal Dust",
-		-- tiles = {"nc_lignite_dust.png"},
-		-- drawtype = "glasslike",
-		-- drowning = 1,
-		-- paramtype = "light",
-		-- sunlight_propagates = true,
-		-- floodable = true,
-		-- walkable = false,
-		-- pointable = false,
-		-- diggable = false,
-		-- buildable_to = true,
-		-- groups = {
-			-- falling_node = 1,
-			-- falling_repose = 2,
-			-- stack_as_node = 1,
--- --			fire_fuel = 0,
-			-- flammable = 1
-		-- },
-		-- sounds = nodecore.sounds("nc_terrain_swishy")
-	-- })
+minetest.register_node("nc_lignite:coal_dust", {
+		description = "Coal Dust",
+		tiles = {"nc_lignite_dust.png"},
+		drawtype = "allfaces_optional",
+		drowning = 1,
+		paramtype = "light",
+		sunlight_propagates = true,
+		floodable = true,
+		walkable = false,
+		pointable = false,
+		diggable = false,
+		buildable_to = true,
+		groups = {
+			falling_node = 1,
+			falling_repose = 1,
+			stack_as_node = 1,
+--			fire_fuel = 1,
+			flammable = 1
+		},
+		sounds = nodecore.sounds("nc_terrain_swishy")
+})
 
-
+nodecore.register_limited_abm({
+		label = "Lignite Dust Dissapation",
+		nodenames = {modname .. ":coal_dust"},
+		neighbors = {"air"},
+		interval = 20,
+		chance = 10,
+		action = function(pos)
+			nodecore.set_node(pos, {name = "air"})
+		end
+	})
+	
+nodecore.register_limited_abm({
+		label = "Lignite Dust Inflagration",
+		nodenames = {modname .. ":coal_dust"},
+		neighbors = {"nc_fire:fire"},
+		interval = 1,
+		chance = 1,
+		action = function(pos)
+			nodecore.set_node(pos, {name = "nc_fire:fire"})
+		end
+	})
 ----------------------------------------
 ----------------------------------------
 
@@ -160,15 +180,15 @@ local function regore(name, def)
 				wherein = "nc_terrain:stone",
 				random_factor = 0,
 				noise_params = {
-					offset = 0,
-					scale = 4,
-					spread = {x = 40, y = 5, z = 40},
-					seed = 12497,
-					octaves = 3,
+					offset = 1,
+					scale = 3,
+					spread = {x = 25, y = 25, z = 25},
+					seed = 31415,
+					octaves = 2,
 					persist = 0.5,
 					flags = "eased",
 				},
-				noise_threshold = 1.3
+				noise_threshold = 1.1
 			}, def))
 end
 for y = 0, 7 do
